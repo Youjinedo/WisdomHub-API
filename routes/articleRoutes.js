@@ -10,7 +10,7 @@ const {
     searchArticles
 } = require("../controllers/articleController");
 
-
+const validateArticle = require("../middleware/validateArticle");
 // CREATE ARTICLE
 router.post("/", createArticle);
 
@@ -24,7 +24,7 @@ router.get("/search", searchArticles);
 router.get("/:id", getArticleById);
 
 // UPDATE ARTICLE
-router.put("/:id", updateArticle);
+router.put("/:id", validateArticle, updateArticle);
 
 // DELETE ARTICLE
 router.delete("/:id", deleteArticle);
