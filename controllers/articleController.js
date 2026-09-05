@@ -16,17 +16,51 @@ exports.createArticle = async (req, res) => {
 };
 
 
-// GET ALL ARTICLES
+
+// GET ALL ARTICLES WITH PAGINATION
 exports.getArticles = async (req, res) => {
     try {
-        const articles = await Article.find();
 
-        res.status(200).json(articles);
+        const page = Number(req.query.page) || 1;
+
+        const limit = Number(req.query.limit) || 5;
+
+        const skip = (page - 1) * limit;
+
+
+        const articles = await Article.find()
+            .skip(skip)
+            .limit(limit);
+
+
+        const totalArticles = await Article.countDocuments();
+
+
+        res.status(200).json({
+
+            currentPage: page,
+
+            itemsPerPage: limit,
+
+            totalArticles: totalArticles,
+
+            totalPages: Math.ceil(totalArticles / limit),
+
+            results: articles.length,
+
+            articles: articles
+
+        });
+
 
     } catch (error) {
+
         res.status(500).json({
+
             message: error.message
+
         });
+
     }
 };
 
