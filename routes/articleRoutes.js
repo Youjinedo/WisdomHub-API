@@ -11,23 +11,24 @@ const {
 } = require("../controllers/articleController");
 
 const validateArticle = require("../middleware/validateArticle");
+const requireAuth = require("../middleware/requireAuth");
 // CREATE ARTICLE
-router.post("/", createArticle);
+router.post("/", requireAuth, validateArticle, createArticle);
 
 // GET ALL ARTICLES
-router.get("/", getArticles);
+router.get("/", requireAuth, getArticles);
 
 // BONUS SEARCH ROUTE (must come before /:id)
-router.get("/search", searchArticles);
+router.get("/search", requireAuth, searchArticles);
 
 // GET SINGLE ARTICLE
-router.get("/:id", getArticleById);
+router.get("/:id", requireAuth, getArticleById);
 
 // UPDATE ARTICLE
-router.put("/:id", validateArticle, updateArticle);
+router.put("/:id", requireAuth, validateArticle, updateArticle);
 
 // DELETE ARTICLE
-router.delete("/:id", deleteArticle);
+router.delete("/:id", requireAuth, deleteArticle);
 
 
 module.exports = router;

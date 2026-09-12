@@ -1,11 +1,12 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
-
+dotenv.config();
 const connectDB = require("./config/db");
 const articleRoutes = require("./routes/articleRoutes");
+const authRoutes = require("./routes/authRoutes");
+const errorHandler = require("./middleware/errorHandler");
 
-dotenv.config();
 
 connectDB();
 
@@ -27,24 +28,18 @@ app.get("/", (req, res) => {
 
 // Article Routes
 app.use("/articles", articleRoutes);
-
+app.use("/auth", authRoutes);
 
 // 404 Handler
-app.use((req, res) => {
-    res.status(404).json({
-        message: "Route not found"
-    });
+app.use((req, res, next) => {
+    const error = new Error("Route not found");
+    error.statusCode = 404;
+    next(error);
 });
 
 
 // Error Handler
-app.use((err, req, res, next) => {
-    console.error(err);
-
-    res.status(500).json({
-        message: "Server error"
-    });
-});
+app.use(errorHandler);
 
 
 const PORT = process.env.PORT || 5000;

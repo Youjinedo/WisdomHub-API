@@ -4,7 +4,10 @@ const Article = require("../models/Article");
 // CREATE ARTICLE
 exports.createArticle = async (req, res) => {
     try {
-        const article = await Article.create(req.body);
+const article = await Article.create({
+    ...req.body,
+    userId: req.user.id
+});
 
         res.status(201).json(article);
 
@@ -29,8 +32,9 @@ exports.getArticles = async (req, res) => {
 
 
         const articles = await Article.find()
-            .skip(skip)
-            .limit(limit);
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
 
 
         const totalArticles = await Article.countDocuments();
@@ -87,14 +91,8 @@ exports.getArticleById = async (req, res) => {
 // UPDATE ARTICLE
 exports.updateArticle = async (req, res) => {
     try {
-        const article = await Article.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            {
-                new: true,
-                runValidators: true
-            }
-        );
+
+        const article = await Article.findById(req.params.id);
 
         if (!article) {
             return res.status(404).json({
@@ -102,20 +100,39 @@ exports.updateArticle = async (req, res) => {
             });
         }
 
+
+        if (!article.userId || article.userId.toString() !== req.user.id) {
+            return res.status(403).json({
+                message: "You can only update your own articles"
+            });
+        }
+
+
+        Object.assign(article, req.body);
+
+        await article.save();
+
+
         res.status(200).json(article);
 
+
     } catch (error) {
+
         res.status(500).json({
             message: error.message
         });
+
     }
 };
+
+     
 
 
 // DELETE ARTICLE
 exports.deleteArticle = async (req, res) => {
     try {
-        const article = await Article.findByIdAndDelete(req.params.id);
+
+        const article = await Article.findById(req.params.id);
 
         if (!article) {
             return res.status(404).json({
@@ -123,14 +140,28 @@ exports.deleteArticle = async (req, res) => {
             });
         }
 
+
+        if (!article.userId || article.userId.toString() !== req.user.id) {
+    return res.status(403).json({
+        message: "You can only delete your own articles"
+    });
+}
+
+
+        await Article.findByIdAndDelete(req.params.id);
+
+
         res.status(200).json({
             message: "Article deleted successfully"
         });
 
+
     } catch (error) {
+
         res.status(500).json({
             message: error.message
         });
+
     }
 };
 // BONUS: SEARCH ARTICLES BY KEYWORD
