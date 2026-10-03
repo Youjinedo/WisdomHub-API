@@ -11,7 +11,7 @@ const requireAuth = (req, res, next) => {
             return res.status(401).json({
                 message: "Authorization token required"
             });
-        }
+        }               
          const token = authHeader.split(" ")[1];
 
         

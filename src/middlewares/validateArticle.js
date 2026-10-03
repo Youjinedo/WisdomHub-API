@@ -1,4 +1,4 @@
-const articleSchema = require("../validators/articleValidator");
+const articleSchema = require("../validations/articleValidator");
 
 
 const validateArticle = (req, res, next) => {

@@ -1,14 +1,9 @@
 const express = require("express");
-const dotenv = require("dotenv");
 const cors = require("cors");
-dotenv.config();
-const connectDB = require("./config/db");
-const articleRoutes = require("./routes/articleRoutes");
-const authRoutes = require("./routes/authRoutes");
-const errorHandler = require("./middleware/errorHandler");
 
-
-connectDB();
+const articleRoutes = require("./src/routes/articleRoutes");
+const authRoutes = require("./src/routes/authRoutes");
+const errorHandler = require("./src/middlewares/errorHandler");
 
 const app = express();
 
@@ -26,9 +21,10 @@ app.get("/", (req, res) => {
 });
 
 
-// Article Routes
+// Routes
 app.use("/articles", articleRoutes);
 app.use("/auth", authRoutes);
+
 
 // 404 Handler
 app.use((req, res, next) => {
@@ -38,13 +34,8 @@ app.use((req, res, next) => {
 });
 
 
-// Error Handler
+// Global Error Handler
 app.use(errorHandler);
 
 
-const PORT = process.env.PORT || 5000;
-
-
-app.listen(PORT, () => {
-    console.log(`WisdomHub API running on port ${PORT}`);
-});
+module.exports = app;
