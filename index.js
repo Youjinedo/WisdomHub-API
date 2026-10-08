@@ -1,12 +1,17 @@
-require("./src/config/env");
+require("dotenv").config();
 
-const app = require("./app");
+const app = require("./src/app");
 const connectDB = require("./src/config/db");
 
-connectDB();
 
 const PORT = process.env.PORT || 5000;
 
+
+// Connect MongoDB
+connectDB();
+
+
+// Start server
 app.listen(PORT, () => {
     console.log(`WisdomHub API running on port ${PORT}`);
 });
